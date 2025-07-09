@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
+require("dotenv").config();
 
 
 dotenv.config();
@@ -17,15 +18,13 @@ app.use(cors({ origin: "*" }));
 
 // Database Connection with better error handling
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(`mongodb+srv://${process.env.Db_username}:${process.env.Db_pass}@cluster0.4bmfh.mongodb.net/Testing?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
+    
   })
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => {
-    console.error("MongoDB Connection Error:", err);
-    process.exit(1);
-  });
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
 
 // Routes
 const employeeRoutes = require("./routes/employee");
