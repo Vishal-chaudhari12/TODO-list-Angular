@@ -1,0 +1,188 @@
+<div class="employee-container">
+  <div class="header">
+    <h2>TODO List System</h2>
+    <button class="btn btn-primary" (click)="showAddEmployeeForm()" *ngIf="!showAddForm && !showEditForm">
+      <i class="icon">+</i> Add New Employee
+    </button>
+  </div>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-message" (click)="clearError()">
+    <span>{{ error }}</span>
+    <button class="close-btn">&times;</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Processing...</p>
+  </div>
+
+  <!-- Add Employee Form -->
+  <div *ngIf="showAddForm" class="form-overlay">
+    <div class="form-container">
+      <div class="form-header">
+        <h3>Add New Employee</h3>
+        <button class="close-btn" (click)="cancelForm()">&times;</button>
+      </div>
+      
+      <form (ngSubmit)="addEmployee()" #addForm="ngForm">
+        <div class="form-group">
+          <label for="name">Name *</label>
+          <input type="text" id="name" name="name" [(ngModel)]="newEmployee.name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" [(ngModel)]="newEmployee.email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone *</label>
+          <input type="tel" id="phone" name="phone" [(ngModel)]="newEmployee.phone" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" id="department" name="department" [(ngModel)]="newEmployee.department">
+          </div>
+
+          <div class="form-group">
+            <label for="position">Position</label>
+            <input type="text" id="position" name="position" [(ngModel)]="newEmployee.position">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="salary">Salary</label>
+            <input type="number" id="salary" name="salary" [(ngModel)]="newEmployee.salary">
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" [(ngModel)]="newEmployee.address">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">Add Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Employee Form -->
+  <div *ngIf="showEditForm" class="form-overlay">
+    <div class="form-container">
+      <div class="form-header">
+        <h3>Edit Employee</h3>
+        <button class="close-btn" (click)="cancelForm()">&times;</button>
+      </div>
+      
+      <form (ngSubmit)="updateEmployee()" #editForm="ngForm" *ngIf="editingEmployee">
+        <div class="form-group">
+          <label for="edit-name">Name *</label>
+          <input type="text" id="edit-name" name="name" [(ngModel)]="editingEmployee.name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-email">Email *</label>
+          <input type="email" id="edit-email" name="email" [(ngModel)]="editingEmployee.email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-phone">Phone *</label>
+          <input type="tel" id="edit-phone" name="phone" [(ngModel)]="editingEmployee.phone" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-department">Department</label>
+            <input type="text" id="edit-department" name="department" [(ngModel)]="editingEmployee.department">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-position">Position</label>
+            <input type="text" id="edit-position" name="position" [(ngModel)]="editingEmployee.position">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-salary">Salary</label>
+            <input type="number" id="edit-salary" name="salary" [(ngModel)]="editingEmployee.salary">
+          </div>
+
+          <div class="form-group">
+            <label for="edit-address">Address</label>
+            <input type="text" id="edit-address" name="address" [(ngModel)]="editingEmployee.address">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="loading">Update Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Employee List -->
+  <div *ngIf="!showAddForm && !showEditForm" class="employee-list-container">
+    <div class="list-header">
+      <h3>Employee List ({{ employees.length }} employees)</h3>
+    </div>
+
+    <div *ngIf="employees.length === 0 && !loading" class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h4>No Employees Found</h4>
+      <p>Start by adding your first employee using the "Add New Employee" button above.</p>
+    </div>
+
+    <div *ngIf="employees.length > 0" class="employee-grid">
+      <div *ngFor="let employee of employees" class="employee-card">
+        <div class="card-header">
+          <h4>{{ employee.name }}</h4>
+          <div class="card-actions">
+            <button class="btn-icon edit-btn" (click)="showEditEmployeeForm(employee)" title="Edit">
+              ✏️
+            </button>
+            <button class="btn-icon delete-btn" (click)="deleteEmployee(employee._id!)" title="Delete">
+              🗑️
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ employee.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Phone:</span>
+            <span class="value">{{ employee.phone }}</span>
+          </div>
+          <div class="info-row" *ngIf="employee.department">
+            <span class="label">Department:</span>
+            <span class="value">{{ employee.department }}</span>
+          </div>
+          <div class="info-row" *ngIf="employee.position">
+            <span class="label">Position:</span>
+            <span class="value">{{ employee.position }}</span>
+          </div>
+          <div class="info-row" *ngIf="employee.salary">
+            <span class="label">Salary:</span>
+            <span class="value">{{ employee.salary | number }}</span>
+          </div>
+          <div class="info-row" *ngIf="employee.address">
+            <span class="label">Address:</span>
+            <span class="value">{{ employee.address }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
